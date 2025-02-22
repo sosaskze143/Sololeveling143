@@ -72,9 +72,10 @@
         <input type="text" id="subject" class="student-input" placeholder="المادة" />
         <input type="number" id="grade" class="student-input" placeholder="الدرجة" />
         
-        <button class="action-button" onclick="addStudent()">إضافة طالب</button>
+        <button class="action-button" id="action-button" onclick="addStudent()">إضافة طالب</button>
         <button class="action-button" onclick="downloadPDF()">تحميل PDF</button>
         <button class="action-button" onclick="downloadExcel()">تحميل Excel</button>
+        <button class="action-button" onclick="downloadCSV()">تحميل CSV</button>
 
         <h3>قائمة الطلاب</h3>
         <table class="student-table">
@@ -109,10 +110,16 @@
                     <td>${student.name}</td>
                     <td>${student.subject}</td>
                     <td>${student.grade}</td>
-                    <td><button onclick="deleteStudent(${student.id})">حذف</button></td>
+                    <td><button onclick="deleteStudent('${student.id}')">حذف</button> 
+                        <button onclick="editStudent('${student.id}')">تعديل</button></td>
                 `;
                 studentList.appendChild(row);
             });
+        }
+
+        function studentExists(id) {
+            const students = getStudents();
+            return students.some(student => student.id === id);
         }
 
         function addStudent() {
@@ -120,49 +127,63 @@
             const name = document.getElementById("student-name").value;
             const subject = document.getElementById("subject").value;
             const grade = document.getElementById("grade").value;
+
+            if (!id || !name || !subject || !grade) {
+                alert("يرجى تعبئة جميع الحقول.");
+                return;
+            }
+
+            if (studentExists(id)) {
+                alert("الطالب برقم التعريف هذا موجود بالفعل.");
+                return;
+            }
+
             const students = getStudents();
-            
             students.push({ id, name, subject, grade });
             localStorage.setItem("students", JSON.stringify(students));
             updateStudentList();
         }
 
-        function deleteStudent(studentId) {
-            const students = getStudents().filter(student => student.id !== studentId);
+        function deleteStudent(id) {
+            const students = getStudents().filter(student => student.id !== id);
             localStorage.setItem("students", JSON.stringify(students));
             updateStudentList();
         }
 
-        // تصدير البيانات إلى PDF
+        function editStudent(id) {
+            const students = getStudents();
+            const student = students.find(student => student.id === id);
+
+            document.getElementById("student-id").value = student.id;
+            document.getElementById("student-name").value = student.name;
+            document.getElementById("subject").value = student.subject;
+            document.getElementById("grade").value = student.grade;
+
+            document.getElementById("action-button").textContent = "تعديل الطالب";
+            document.getElementById("action-button").onclick = function() {
+                updateStudent(id);
+            };
+        }
+
+        function updateStudent(id) {
+            const students = getStudents();
+            const student = students.find(student => student.id === id);
+
+            student.name = document.getElementById("student-name").value;
+            student.subject = document.getElementById("subject").value;
+            student.grade = document.getElementById("grade").value;
+
+            localStorage.setItem("students", JSON.stringify(students));
+            updateStudentList();
+
+            document.getElementById("action-button").textContent = "إضافة طالب";
+            document.getElementById("action-button").onclick = addStudent;
+        }
+
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             const students = getStudents();
             let y = 10;
             students.forEach(student => {
-                doc.text(`ID: ${student.id}, Name: ${student.name}, Subject: ${student.subject}, Grade: ${student.grade}`, 10, y);
-                y += 10;
-            });
-            doc.save("students_report.pdf");
-        }
-
-        // تصدير البيانات إلى Excel
-        function downloadExcel() {
-            const students = getStudents();
-            const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.json_to_sheet(students);
-            XLSX.utils.book_append_sheet(wb, ws, "Students");
-            XLSX.writeFile(wb, "students_report.xlsx");
-        }
-
-        // تحديث القائمة عند تحميل الصفحة
-        window.onload = updateStudentList;
-    </script>
-
-    <!-- إضافة المكتبة لتصدير Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.2/xlsx.full.min.js"></script>
-    <!-- إضافة المكتبة لتصدير PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-</body>
-</html>
+                doc.text(`ID: ${student.id}, Name: ${student.name}, Subject: ${student.subject}, Grade:
