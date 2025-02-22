@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل دخول المدير</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .input-field {
+            margin: 15px 0;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .login-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>تسجيل دخول المدير</h2>
+        <input type="text" id="username" class="input-field" placeholder="اسم المستخدم" />
+        <input type="password" id="password" class="input-field" placeholder="كلمة السر" />
+        <button class="login-button" onclick="login()">دخول</button>
+        <p id="error-message" class="error-message"></p>
+    </div>
+
+    <script>
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const errorMessage = document.getElementById("error-message");
+
+            // التحقق من اسم المستخدم وكلمة السر
+            if (username === "admin" && password === "admin") {
+                // إعادة توجيه المدير إلى صفحة الإدارة
+                window.location.href = "admin-dashboard.html"; // يمكنك تغيير هذه إلى الصفحة الخاصة بالمدير
+            } else {
+                // عرض رسالة خطأ
+                errorMessage.textContent = "اسم المستخدم أو كلمة السر غير صحيحة!";
+            }
+        }
+    </script>
+
+</body>
+</html>
