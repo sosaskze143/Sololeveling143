@@ -186,4 +186,32 @@
             const students = getStudents();
             let y = 10;
             students.forEach(student => {
-                doc.text(`ID: ${student.id}, Name: ${student.name}, Subject: ${student.subject}, Grade:
+                doc.text(`ID: ${student.id}, Name: ${student.name}, Subject: ${student.subject}, Grade: ${student.grade}`, 10, y);
+                y += 10;
+            });
+            doc.save("students_report.pdf");
+        }
+
+        function downloadExcel() {
+            const students = getStudents();
+            let csvContent = "رقم الطالب,اسم الطالب,المادة,الدرجة\n";
+            students.forEach(student => {
+                csvContent += `${student.id},${student.name},${student.subject},${student.grade}\n`;
+            });
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "students_report.csv";
+            link.click();
+        }
+
+        function downloadCSV() {
+            downloadExcel();
+        }
+
+        // تحديث القائمة عند تحميل الصفحة
+        updateStudentList();
+    </script>
+
+</body>
+</html>
